@@ -1,8 +1,8 @@
 # Websocket-Rails
 
-[![Build Status](https://travis-ci.org/websocket-rails/websocket-rails.png?branch=master)](https://travis-ci.org/websocket-rails/websocket-rails)
+[![Build Status](https://travis-ci.org/g3d/websocket-rails.png?branch=master)](https://travis-ci.org/g3d/websocket-rails)
 [![Gem Version](https://badge.fury.io/rb/websocket-rails.png)](http://badge.fury.io/rb/websocket-rails)
-[![Code Climate](https://codeclimate.com/github/websocket-rails/websocket-rails.png)](https://codeclimate.com/github/websocket-rails/websocket-rails)
+[![Code Climate](https://codeclimate.com/github/g3d/websocket-rails.png)](https://codeclimate.com/github/g3d/websocket-rails)
 
 
 If you haven't done so yet, check out the [Project
@@ -53,13 +53,13 @@ Map events to controller actions using an Event Router.
 ````ruby
 WebsocketRails::EventMap.describe do
   namespace :tasks do
-  
+
     # using a Hash to specify the target
     subscribe :create, :to => TaskController, :with_method => :create
-    
+
     # using the same syntax as routes.rb
     subscribe :update, 'task#update'
-    
+
     # if your controller is not a top-level object
     subscribe :create_admin, :to => Admin::TaskController, :with_method => :create
 
@@ -186,7 +186,7 @@ WebsocketRails[:posts].trigger 'new', latest_post
 ## Private Channel Support
 
 Need to restrict access to a particular channel? No problem. We've got
-that. 
+that.
 
 Private channels give you the ability to authorize a user's
 subscription using the authorization mechanism of your choice.
@@ -197,12 +197,12 @@ Then handle the channel authorization by subscribing to the `websocket_rails.sub
 ````ruby
 WebsocketRails::EventMap.describe do
   private_channel :secret_posts
-  
+
   namespace :websocket_rails do
     subscribe :subscribe_private, :to => AuthorizationController, :with_method => :authorize_channels
   end
 end
-```` 
+````
 
 Or you can always mark any channel as private later on.
 
