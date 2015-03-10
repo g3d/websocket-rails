@@ -25,6 +25,7 @@ module WebsocketRails
       def process_action(method, event)
         if respond_to?(method)
           self.send(method)
+          trigger_finished
         else
           raise EventRoutingError.new(event, self, method)
         end
@@ -98,7 +99,7 @@ module WebsocketRails
     # this action. The object passed to this method will be passed as an argument to
     # the callback function on the client.
     def trigger_success(data=nil)
-      event.success = true
+      event.success = Event::SUCCEEDED
       event.data = data
       event.trigger
     end
@@ -107,7 +108,7 @@ module WebsocketRails
     # this action. The object passed to this method will be passed as an argument to
     # the callback function on the client.
     def trigger_failure(data=nil)
-      event.success = false
+      event.success = Event::FAILED
       event.data = data
       event.trigger
     end
@@ -191,6 +192,16 @@ module WebsocketRails
       else
         super
       end
+    end
+
+    def trigger_finished
+      return if event.nil? || event.success
+      if WebsocketRails.config.trigger_success_by_default
+        event.success = Event::SUCCEEDED
+      else
+        event.success = Event::FINISHED_WITHOUT_RESULT
+      end
+      event.trigger
     end
 
   end
