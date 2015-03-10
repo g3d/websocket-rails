@@ -123,16 +123,16 @@ module WebsocketRails
 
       def user
         return unless user_connection?
-        controller_delegate.current_user
+        controller_delegate.send(current_entity)
       end
 
       def user_identifier
         @user_identifier ||= begin
           identifier = WebsocketRails.config.user_identifier
 
-          return unless current_user_responds_to?(identifier)
+          return unless current_entity_responds_to?(identifier)
 
-          controller_delegate.current_user.send(identifier)
+          controller_delegate.send(current_entity).send(identifier)
          end
       end
 
@@ -145,8 +145,20 @@ module WebsocketRails
         @ping_timer.try(:cancel)
         start_ping_timer
       end
+      
+      def register_user
+        dispatcher.connection_manager.register_user self
+      end
+
+      def destroy_user
+        dispatcher.connection_manager.destroy_user self
+      end
 
       private
+      
+      def current_entity
+        "current_#{WebsocketRails.config.user_class.name.singularize.underscore}".to_sym
+      end
 
       def dispatch(event)
         dispatcher.dispatch event
@@ -162,11 +174,11 @@ module WebsocketRails
         dispatcher.connection_manager.close_connection self
       end
 
-      def current_user_responds_to?(identifier)
-        controller_delegate                            &&
-        controller_delegate.respond_to?(:current_user) &&
-        controller_delegate.current_user               &&
-        controller_delegate.current_user.respond_to?(identifier)
+      def current_entity_responds_to?(identifier)
+        controller_delegate                             &&
+        controller_delegate.respond_to?(current_entity) &&
+        controller_delegate.send(current_entity)        &&
+        controller_delegate.send(current_entity).respond_to?(identifier)
       end
 
       attr_accessor :pong
