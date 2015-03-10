@@ -11,8 +11,8 @@ namespace :websocket_rails do
 
     if options[:daemonize]
       pid = fork do
-        Process.daemon
         Thin::Controllers::Controller.new(options).start
+        Process.daemon
       end
       Process.detach(pid)
     else
